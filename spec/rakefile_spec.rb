@@ -20,10 +20,12 @@ RSpec.describe 'Rakefile' do
   end
 
   describe 'extract_wav_metadata' do
-    let(:input_dir) { Dir.mktmpdir }
+    let(:input_dir) { Pathname(Dir.mktmpdir('input_dir')) }
+
     before do
-      FileUtils.cp fixture('image.png'), File.join(input_dir, 'image')
-      FileUtils.cp fixture('sound.wav'), File.join(input_dir, 'sound')
+      FileUtils.rm_r "#{__dir__}/../output/"
+      FileUtils.cp fixture('image.png'), input_dir.join('image')
+      FileUtils.cp fixture('sound.wav'), input_dir.join('sound')
     end
 
     it 'extracts metadata into XML files' do
@@ -31,17 +33,23 @@ RSpec.describe 'Rakefile' do
         .to(
           change { FileList["#{input_dir}/*"].pathmap('%f') }
             .from(%w[image sound])
-            .to(%w[image sound.wav sound.xml])
+            .to(%w[image sound.wav])
+          .and(
+            change { FileList['./output/*/*'].pathmap('%f') }
+            .from(%w[])
+            .to(%w[sound.xml])
+          )
         )
     end
 
-    it 'generates a valid metadata file' do
+    it 'generates a valid metadata files' do
       rake['extract_wav_metadata'].invoke(input_dir)
 
       xsd = Nokogiri::XML::Schema(File.read('wav.xsd'))
-      doc = Nokogiri::XML(File.read(File.join(input_dir, 'sound.xml')))
-
-      expect(xsd.valid?(doc)).to be true
+      Dir['output/*/*.xml'].each do |xml_path|
+        doc = Nokogiri::XML(File.read(xml_path))
+        expect(xsd.valid?(doc)).to be true
+      end
     end
   end
 end

@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 require 'rake'
+require 'rake/clean'
 require_relative 'lib/wav_file'
+
+CLOBBER.add('output/')
 
 desc 'Appends `.wav` extension to extension-less WAV files'
 task :ensure_wav_ext, :input_dir do |_t, args|
@@ -25,6 +28,11 @@ task :extract_wav_metadata, [:input_dir] => [:ensure_wav_ext] do |_t, args|
   # The rule at the bottom will match each individual output file.
   multitask do_extract_wav_metadata: xml_files
   Rake::Task['do_extract_wav_metadata'].invoke
+
+  # Move the metadata files into the timestamped output directory
+  output_dir = "output/#{Time.now.to_i}/"
+  mkdir_p output_dir, verbose: false
+  mv xml_files, output_dir, verbose: false
 end
 
 # Rule to generate an XML from a WAV file
