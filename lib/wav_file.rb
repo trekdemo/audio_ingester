@@ -55,10 +55,22 @@ module WavFile
     end
   end
 
+  # Decides if the path points to a WAV file
+  #
+  # @param [String] path file path to a WAV file.
+  # @return Boolean
+  #
+  def self.wav_file?(path)
+    !!read_format(path)
+  rescue WavFormatError
+    false
+  end
+
   # @private
   def self.assert(value, expected)
     raise WavFormatError if value != expected
   end
+  private_class_method :assert
 
   # Format contains information about the data format of a WAV file
   Format = Data.define(:format_id, :channels, :sample_rate_hz, :bytes_per_sec, :block_size, :bit_per_sample) do

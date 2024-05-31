@@ -26,4 +26,17 @@ RSpec.describe WavFile do
       end
     end
   end
+
+  describe '.wav_file?' do
+    {
+      fixture('sound.wav') => true,
+      fixture('image.png') => false,
+      fixture('text.txt') => false
+    }.each_pair do |path, expected|
+      context "when a path points to a #{path.extname} file" do
+        subject { described_class.wav_file?(path) }
+        it { is_expected.to eq(expected) }
+      end
+    end
+  end
 end
