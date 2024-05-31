@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'nokogiri'
+
 # WavFile gathers information about WAV files.
 module WavFile
   WavFormatError = Class.new(StandardError)
@@ -80,6 +82,21 @@ module WavFile
 
     def bit_rate
       sample_rate_hz * channels * bit_per_sample
+    end
+
+    def to_xml
+      builder = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
+        xml.track do
+          xml.format format
+          xml.channel_count channels
+          xml.sampling_rate sample_rate_hz
+          xml.bit_depth bit_per_sample
+          xml.byte_rate bytes_per_sec
+          xml.bit_rate bit_rate
+        end
+      end
+
+      builder.to_xml
     end
   end
 end

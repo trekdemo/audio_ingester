@@ -39,4 +39,32 @@ RSpec.describe WavFile do
       end
     end
   end
+
+  describe WavFile::Format do
+    describe '#to_xml' do
+      let(:metadata) { WavFile.read_format(fixture('sound.wav')) }
+      subject(:xml) { metadata.to_xml }
+
+      it 'returns XML with WAV format information' do
+        expect(xml).to eq(<<~XML)
+          <?xml version="1.0" encoding="UTF-8"?>
+          <track>
+            <format>PCM</format>
+            <channel_count>2</channel_count>
+            <sampling_rate>44100</sampling_rate>
+            <bit_depth>16</bit_depth>
+            <byte_rate>176400</byte_rate>
+            <bit_rate>1411200</bit_rate>
+          </track>
+        XML
+      end
+
+      it 'generates a valid metadata file' do
+        xsd = Nokogiri::XML::Schema(File.read('wav.xsd'))
+        doc = Nokogiri::XML(xml)
+
+        expect(xsd.valid?(doc)).to be true
+      end
+    end
+  end
 end
