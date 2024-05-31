@@ -37,7 +37,7 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
-  require_relative 'support/fixtures_helper'
+  Dir["#{__dir__}/support/**/*.rb"].each { |f| require f }
   config.include FixturesHelper
   config.extend FixturesHelper
 
