@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
+ruby file: '.ruby-version'
 
 # Nokogiri (鋸) makes it easy and painless to work with XML and HTML from Ruby.
 gem 'nokogiri', '~> 1.16'
