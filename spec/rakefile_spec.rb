@@ -3,13 +3,13 @@ require 'tmpdir'
 RSpec.describe 'Rakefile' do
   include_context 'rake'
 
-  describe 'ensure_wav_ext' do
+  describe 'wav:ensure_ext' do
     it 'appends extentions to WAV files' do
       Dir.mktmpdir do |dir|
         FileUtils.cp fixture('image.png'), File.join(dir, 'image')
         FileUtils.cp fixture('sound.wav'), File.join(dir, 'sound')
 
-        expect { rake['ensure_wav_ext'].invoke(dir) }
+        expect { task.invoke(dir) }
           .to(
             change { FileList["#{dir}/*"].pathmap('%f') }
               .from(%w[image sound])
@@ -19,17 +19,17 @@ RSpec.describe 'Rakefile' do
     end
   end
 
-  describe 'extract_wav_metadata' do
+  describe 'wav:extract_metadata' do
     let(:input_dir) { Pathname(Dir.mktmpdir('input_dir')) }
 
     before do
-      FileUtils.rm_r "#{__dir__}/../output/"
+      FileUtils.rm_rf "#{__dir__}/../output/"
       FileUtils.cp fixture('image.png'), input_dir.join('image')
       FileUtils.cp fixture('sound.wav'), input_dir.join('sound')
     end
 
     it 'extracts metadata into XML files' do
-      expect { rake['extract_wav_metadata'].invoke(input_dir) }
+      expect { task.invoke(input_dir) }
         .to(
           change { FileList["#{input_dir}/*"].pathmap('%f') }
             .from(%w[image sound])
@@ -43,7 +43,7 @@ RSpec.describe 'Rakefile' do
     end
 
     it 'generates a valid metadata files' do
-      rake['extract_wav_metadata'].invoke(input_dir)
+      task.invoke(input_dir)
 
       xsd = Nokogiri::XML::Schema(File.read('wav.xsd'))
       Dir['output/*/*.xml'].each do |xml_path|

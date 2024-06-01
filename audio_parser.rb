@@ -5,4 +5,4 @@ require 'rake'
 Rake.load_rakefile('Rakefile')
 
 source_directory = ARGV[0]
-Rake::Task['extract_wav_metadata'].invoke(source_directory)
+Rake::Task['wav:extract_metadata'].invoke(source_directory)
