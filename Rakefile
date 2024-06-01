@@ -2,6 +2,7 @@
 
 require 'rake'
 require 'rake/clean'
+require 'rspec/core/rake_task'
 require_relative 'lib/wav_file'
 
 CLOBBER.add('output/')
@@ -44,3 +45,6 @@ namespace :wav do
     end
   end
 end
+
+RSpec::Core::RakeTask.new(:spec)
+task default: :spec

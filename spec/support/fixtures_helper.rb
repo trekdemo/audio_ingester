@@ -1,3 +1,5 @@
+require 'pathname'
+
 module FixturesHelper
   FIXTURES_PATH = Pathname(__dir__).join('../fixtures')
 
